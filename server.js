@@ -4,7 +4,7 @@
 const express = require("express"),
   { urlencoded, json } = require("body-parser"),
   app = express();
-const BootBot = require('bootbot');
+const BootBot = require("bootbot");
 const axios = require("axios");
 const cheerio = require("cheerio");
 require("dotenv").config();
@@ -34,51 +34,55 @@ app.use(urlencoded({ extended: true }));
 app.use(json());
 
 // Respond with 'Hello World' when a GET request is made to the homepage
-app.get("/", function (_req, res) {
-  res.send("Hello World");
+app.get("/", function (req, res) {
+  res.send("hey there boi");
 });
 
-
+app.get("/webhook", function (req, res) {
+  if (req.query["hub.verify_token"] === process.env.VERIFY_TOKEN) {
+    return res.send(req.query["hub.challenge"]);
+  }
+  res.send("wrong token");
+});
 
 const bot = new BootBot({
   accessToken: process.env.PAGE_ACCESS_TOKEN,
   verifyToken: process.env.VERIFY_TOKEN,
-  appSecret: process.env.APP_SECRET
+  appSecret: process.env.APP_SECRET,
 });
 
-bot.on('message', async (payload, chat) => {
+bot.on("message", async (payload, chat) => {
   const text = payload.message.text;
 
   // Make a request to the OpenAI Text-Davinci API
   const response = await openai.createChatCompletion({
-      model: "gpt-3.5-turbo",
-      temperature: 0.5,
-      max_tokens: 2000,
-      top_p: 0,
-      frequency_penalty: 0,
-      presence_penalty: 0,
-      stop: ["{}"],
-      messages: [
-        {
-          role: "system",
-          content: "You are a helpful assistant that generates search phrase.",
-        },
-        {
-          role: "system",
-          content:
-            "You are ChatGPT, a large language model trained by OpenAI. Answer as concisely as possible. Knowledge cutoff: {knowledge_cutoff} Current date: {current_date}",
-        },
+    model: "gpt-3.5-turbo",
+    temperature: 0.5,
+    max_tokens: 2000,
+    top_p: 0,
+    frequency_penalty: 0,
+    presence_penalty: 0,
+    stop: ["{}"],
+    messages: [
+      {
+        role: "system",
+        content: "You are a helpful assistant that generates search phrase.",
+      },
+      {
+        role: "system",
+        content:
+          "You are ChatGPT, a large language model trained by OpenAI. Answer as concisely as possible. Knowledge cutoff: {knowledge_cutoff} Current date: {current_date}",
+      },
 
-        { role: "user", content: `User: ${text}\nBot:` },
-      ],
-    });
+      { role: "user", content: `User: ${text}\nBot:` },
+    ],
+  });
 
   const aiResponse = response.data.choices[0].message.content;
   chat.say(aiResponse);
 });
 
 bot.start();
-
 
 let topic;
 const GetSearchPhrase = async () => {
