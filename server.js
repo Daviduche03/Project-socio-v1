@@ -1,3 +1,10 @@
+("use strict");
+
+// Imports dependencies and set up http server
+const express = require("express"),
+  { urlencoded, json } = require("body-parser"),
+  app = express();
+
 const axios = require("axios");
 const cheerio = require("cheerio");
 require("dotenv").config();
@@ -19,13 +26,6 @@ Health and Wellness and Fitness
 Travel and Culture
 Finance and Investing
 */
-
-("use strict");
-
-// Imports dependencies and set up http server
-const express = require("express"),
-  { urlencoded, json } = require("body-parser"),
-  app = express();
 
 // Parse application/x-www-form-urlencoded
 app.use(urlencoded({ extended: true }));
@@ -173,8 +173,6 @@ function callSendAPI(senderPsid, response) {
   };
 
   // Send the HTTP request to the Messenger Platform
-  const axios = require("axios");
-
   axios
     .post("https://graph.facebook.com/v2.6/me/messages", {
       access_token: PAGE_ACCESS_TOKEN,
@@ -326,7 +324,6 @@ const UploadToFacebook = async (article, image) => {
 };
 
 //Random images
-
 const searchImages = async (query) => {
   try {
     const response = await axios.get(`${BASE_URL}/search/photos`, {
@@ -347,8 +344,6 @@ const searchImages = async (query) => {
 };
 
 // Runs every day at 7:00AM, 2:00 PM & 5:00 PM
-console.log(CronJob);
-
 const job = new CronJob("0 7,14,17,23 * * *", () => {
   console.log("This job is triggered each second!");
 
@@ -374,7 +369,6 @@ const job = new CronJob("0 7,14,17,23 * * *", () => {
     .catch((error) => console.error(error));
 });
 job.start();
-
 
 // listen for requests :)
 const port = process.env.PORT;
