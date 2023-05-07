@@ -43,7 +43,6 @@ app.get("/webhook", function (req, res) {
     return res.send(req.query["hub.challenge"]);
   }
   res.send("wrong token");
-  console.log(hub.verify_token);
 });
 
 // listen for requests :)
