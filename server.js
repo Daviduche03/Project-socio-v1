@@ -163,21 +163,25 @@ function handlePostback(senderPsid, receivedPostback) {
 function callSendAPI(senderPsid, response) {
   // The page access token we have generated in your app settings
   const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
-
+  const PAGE_ID = process.env.PAGE_ID || "100287699733096";
+  
   // Construct the message body
-  let requestBody = {
-    recipient: {
-      id: senderPsid,
-    },
-    message: response,
-  };
-
-  // Send the HTTP request to the Messenger Platform
   axios
-    .post("https://graph.facebook.com/v2.6/me/messages", {
-      access_token: PAGE_ACCESS_TOKEN,
-      ...requestBody,
-    })
+    .post(
+      `https://graph.facebook.com/v16.0/${PAGE_ID}/messages?access_token=${PAGE_ACCESS_TOKEN}`,
+      {
+        recipient: {
+          id: senderPsid,
+        },
+        messaging_type: "RESPONSE",
+        message: response,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
     .then(() => {
       console.log("Message sent!");
     })
