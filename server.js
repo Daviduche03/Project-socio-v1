@@ -43,7 +43,13 @@ app.get("/webhook", function (req, res) {
     return res.send(req.query["hub.challenge"]);
   }
   res.send("wrong token");
+  console.log(hub.verify_token);
 });
+
+// listen for requests :)
+const port = process.env.PORT;
+app.listen(port, () => console.log(`Server started on port ${port}`));
+
 
 const bot = new BootBot({
   accessToken: process.env.PAGE_ACCESS_TOKEN,
@@ -268,6 +274,3 @@ const job = new CronJob("0 7,14,17,23 * * *", () => {
 });
 job.start();
 
-// listen for requests :)
-const port = process.env.PORT;
-app.listen(port, () => console.log(`Server started on port ${port}`));
