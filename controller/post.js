@@ -3,7 +3,7 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
 require("dotenv").config();
-const { CronJob } = require("cron");
+const CronJob = require("cron").CronJob;
 const { Configuration, OpenAIApi } = require("openai");
 const configuration = new Configuration({
   apiKey: process.env.OPENAI,
@@ -172,30 +172,33 @@ const searchImages = async (query) => {
 };
 
 // Runs every day at 7:00AM, 2:00 PM & 5:00 PM
-const job = new CronJob("0 9,14,17,23 * * *", () => {
-  console.log("This job is triggered each second!");
-  GetSearchPhrase()
-    .then((phrase) => {
-      let stringWithoutQuotes = phrase.substring(1, phrase.length - 1);
-      console.log(stringWithoutQuotes);
-      searchGoogle(stringWithoutQuotes)
-        .then((content) => {
-          Summarize(content)
-            .then((output) => {
-              searchImages(topic).then((results) => {
-                console.log(results);
-                UploadToFacebook(output, results).then((res) =>
-                  console.log(res)
-                );
-              });
-            })
-            .catch((error) => console.error(error));
-        })
-        .catch((error) => console.error(error));
-    })
-    .catch((error) => console.error(error));
-});
-
-job.start();
-
+const job = new CronJob(
+  "0 6,13,17,23 * * *",
+  () => {
+    console.log("This job is triggered each second!");
+    GetSearchPhrase()
+      .then((phrase) => {
+        let stringWithoutQuotes = phrase.substring(1, phrase.length - 1);
+        console.log(stringWithoutQuotes);
+        searchGoogle(stringWithoutQuotes)
+          .then((content) => {
+            Summarize(content)
+              .then((output) => {
+                searchImages(topic).then((results) => {
+                  console.log(results);
+                  UploadToFacebook(output, results).then((res) =>
+                    console.log(res)
+                  );
+                });
+              })
+              .catch((error) => console.error(error));
+          })
+          .catch((error) => console.error(error));
+      })
+      .catch((error) => console.error(error));
+  },
+  null,
+  true,
+  "Africa/Lagos"
+);
 module.exports = job;
