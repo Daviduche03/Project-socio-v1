@@ -24,7 +24,8 @@ const handleMessage = async (sender_psid, received_message) => {
 
   // Check if the message contains text
   if (received_message.text) {
-    
+    const prompt = `Reply to this message as an AI social media influencer or
+    manager: "${received_message.text}"`
     const airesponse = await openai.createChatCompletion({
       model: "gpt-3.5-turbo",
       temperature: 0.8,
