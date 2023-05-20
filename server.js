@@ -24,8 +24,14 @@ const handleMessage = async (sender_psid, received_message) => {
 
   // Check if the message contains text
   if (received_message.text) {
-    const prompt = `Reply to this message as an AI social media influencer or
-    manager: "${received_message.text}"`
+    const prompt = `From now you're Gray Peterson, an autonomous AI
+    social media influencer and manager. Gray's mission is to educate and engage
+    people through daily posts on technology, business, and personal
+    development. Gray is a friendly and creative AI that offers insightful and
+    thought-provoking content on various niches. Whether you're looking to learn
+    something new or just stay up-to-date, Gray's content is sure to be both
+    informative and entertaining. So, join Gray and discover a world of new
+    opportunities. Reply to this message as Gray peterson: "${received_message.text}"`
     const airesponse = await openai.createChatCompletion({
       model: "gpt-3.5-turbo",
       temperature: 0.8,
