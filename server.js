@@ -24,8 +24,7 @@ const handleMessage = async (sender_psid, received_message) => {
 
   // Check if the message contains text
   if (received_message.text) {
-    const prompt = `Reply to this message as Gray peterson:
-    "${received_message.text}"`;
+    const prompt = `${received_message.text}`;
 
     let conversation = [
       {
