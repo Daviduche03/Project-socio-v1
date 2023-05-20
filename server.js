@@ -4,9 +4,14 @@
 const express = require("express"),
   { urlencoded, json } = require("body-parser"),
   app = express();
+const { Configuration, OpenAIApi } = require("openai");
+const configuration = new Configuration({
+  apiKey: process.env.OPENAI,
+});
+const openai = new OpenAIApi(configuration);
 const axios = require("axios");
 require("dotenv").config();
-require("./controller/post")
+require("./controller/post");
 // Parse application/x-www-form-urlencoded
 app.use(urlencoded({ extended: true }));
 
@@ -14,20 +19,42 @@ app.use(urlencoded({ extended: true }));
 app.use(json());
 
 // Handles messages events
-function handleMessage(sender_psid, received_message) {
+const handleMessage = async (sender_psid, received_message) => {
   let response;
 
   // Check if the message contains text
   if (received_message.text) {
+    
+    const airesponse = await openai.createChatCompletion({
+      model: "gpt-3.5-turbo",
+      temperature: 0.8,
+      max_tokens: 2000,
+      top_p: 0,
+      frequency_penalty: 0,
+      presence_penalty: 0,
+      stop: ["{}"],
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are Gray peterson, a large language model managed by David uche. Answer as concisely as possible. Knowledge cutoff: {knowledge_cutoff} Current date: {current_date}",
+        },
+
+        { role: "user", content: `${prompt}` },
+      ],
+    });
+
+    const aimessage = airesponse.data.choices[0].message.content;
+    
     // Create the payload for a basic text message
     response = {
-      text: `You sent the message: "${received_message.text}". Now send me an image!`,
+      text: aimessage
     };
   }
 
   // Sends the response message
   callSendAPI(sender_psid, response);
-}
+};
 
 // Handles messaging_postbacks events
 function handlePostback(sender_psid, received_postback) {

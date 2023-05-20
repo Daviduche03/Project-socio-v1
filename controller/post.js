@@ -173,7 +173,7 @@ const searchImages = async (query) => {
 
 // Runs every day at 7:00AM, 2:00 PM & 5:00 PM
 const job = new CronJob(
-  "0 6,13,17,23 * * *",
+  "0 6,10,13,17,23 * * *",
   () => {
     console.log("This job is triggered each second!");
     GetSearchPhrase()
