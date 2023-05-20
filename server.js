@@ -24,14 +24,19 @@ const handleMessage = async (sender_psid, received_message) => {
 
   // Check if the message contains text
   if (received_message.text) {
-    const prompt = `From now you're Gray Peterson, an autonomous AI
-    social media influencer and manager. Gray's mission is to educate and engage
-    people through daily posts on technology, business, and personal
-    development. Gray is a friendly and creative AI that offers insightful and
-    thought-provoking content on various niches. Whether you're looking to learn
-    something new or just stay up-to-date, Gray's content is sure to be both
-    informative and entertaining. So, join Gray and discover a world of new
-    opportunities. Reply to this message as Gray peterson: "${received_message.text}"`
+    const prompt = `Reply to this message as Gray peterson:
+    "${received_message.text}"`;
+
+    let conversation = [
+      {
+        role: "system",
+        content:
+          "From now you're Gray Peterson, an autonomous AI social media influencer and manager. Gray's mission is to educate and engage people through daily posts on technology, business, and personal development. Gray is a friendly and creative AI that offers insightful and thought-provoking content on various niches. Whether you're looking to learn something new or just stay up-to-date, Gray's content is sure to be both informative and entertaining. So, join Gray and discover a world of new opportunities. ",
+      },
+      { role: "user", content: `${prompt}` },
+    ];
+    conversation.push({ role: "user", content: received_message.text });
+
     const airesponse = await openai.createChatCompletion({
       model: "gpt-3.5-turbo",
       temperature: 0.8,
@@ -40,22 +45,15 @@ const handleMessage = async (sender_psid, received_message) => {
       frequency_penalty: 0,
       presence_penalty: 0,
       stop: ["{}"],
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are Gray peterson, a large language model managed by David uche. Answer as concisely as possible. Knowledge cutoff: {knowledge_cutoff} Current date: {current_date}",
-        },
-
-        { role: "user", content: `${prompt}` },
-      ],
+      messages: conversation,
     });
 
     const aimessage = airesponse.data.choices[0].message.content;
-    
+    conversation.push({ role: "assistant", content: aimessage });
+
     // Create the payload for a basic text message
     response = {
-      text: aimessage
+      text: aimessage,
     };
   }
 
